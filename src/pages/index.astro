@@ -1,11 +1,25 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Header from '../components/Header.astro';
+import SignupForm from '../components/SignupForm.astro';
+import GoslingImg from '../assets/goslings.jpg';
 ---
 
 <Layout title="Home">
-	<Welcome />
+	<Header />
+	<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-8">
+			<div>
+				<h1 class="text-4xl font-bold">Stand with Goslings: Protect Our Feathered Friends</h1>
+				<img src={GoslingImg.src} alt="Gosling Image" class="w-full h-auto my-4 rounded-lg shadow-md" />
+				<p>Our charity is dedicated to rescuing and protecting vulnerable goslings in our local wetlands. Each spring, countless young goslings face threats from habitat loss, pollution, and predators. We work tirelessly to provide safe nesting areas, rehabilitate injured birds, and educate the community about the importance of preserving natural habitats.</p>
+				<br>
+				<p>By supporting our mission, you help ensure that goslings have a safe start in life and that future generations can enjoy the beauty and diversity of our natural world.</p>
+
+			</div>
+			<div>
+				<SignupForm />
+			</div>
+		</div>
+	</div>
 </Layout>

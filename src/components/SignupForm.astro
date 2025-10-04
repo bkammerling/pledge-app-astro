@@ -1,0 +1,49 @@
+---
+import ProgressBar from './ProgressBar.astro';
+---
+<div class="p-6 rounded-lg border border-gray-300">
+  <ProgressBar />
+  <hr class="border-gray-300 my-4" />
+  <p class="mb-4"><strong>I believe in protecting goslings everywhere. Add my name:</strong></p>
+  <form class="flex flex-col gap-4 max-w-sm">
+    <div class="relative">
+      <input 
+        type="text" 
+        name="name" 
+        id="name"
+        required 
+        class="peer w-full px-3 pt-6 pb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder-transparent"
+        placeholder="Name"
+      />
+      <label 
+        for="name"
+        class="absolute left-3 top-2 text-xs text-gray-500 transition-all duration-200 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-primary-500"
+      >
+        Name
+      </label>
+    </div>
+    <div class="relative">
+      <input 
+        type="email" 
+        name="email" 
+        id="email"
+        required 
+        class="peer w-full px-3 pt-6 pb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 placeholder-transparent"
+        placeholder="Email"
+      />
+      <label 
+        for="email"
+        class="absolute left-3 top-2 text-xs text-gray-500 transition-all duration-200 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-xs peer-focus:text-primary-500"
+      >
+        Email
+      </label>
+    </div>
+    <button 
+      type="submit" 
+      class="bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 cursor-pointer"
+    >
+      Add My Name
+    </button>
+    <div class="text-gray-600 text-sm">By adding your name, you agree to our Terms of Service and Privacy Policy.</div>
+  </form>
+</div>
