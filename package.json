@@ -4,9 +4,11 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build --remote",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "cf:dev": "npm run build && wrangler pages dev ./dist",
+    "cf:deploy": "npm run build && wrangler pages deploy ./dist"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.9",
@@ -14,5 +16,8 @@
     "@tailwindcss/vite": "^4.1.14",
     "astro": "^5.14.1",
     "tailwindcss": "^4.1.14"
+  },
+  "devDependencies": {
+    "wrangler": "^4.42.0"
   }
 }
