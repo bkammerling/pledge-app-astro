@@ -12,7 +12,9 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-  adapter: cloudflare(),
-  output: 'server',
+  adapter: cloudflare({platformProxy: {
+      enabled: true,
+    },
+  }),
   integrations: [db()],
 });
