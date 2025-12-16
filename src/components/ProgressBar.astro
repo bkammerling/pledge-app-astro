@@ -2,7 +2,7 @@
 import { db, Pledge, eq } from 'astro:db';
 const { pledgeId } = Astro.props;
 const result = await db.select().from(Pledge).where(eq(Pledge.id, pledgeId));
-const pledge = result[0] || { signees: 0, target: 1000 };
+const pledge = result[0] || { signees: 0, target: 1200 };
 ---
 <div class="flex flex-col">
   <div class="w-full max-w-sm bg-gray-200 rounded-full h-6 mb-2 relative">

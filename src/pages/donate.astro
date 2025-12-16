@@ -1,6 +1,24 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
+import Header from '@/components/Header.astro';
 ---
 
 <Layout title="Donate">
+  <Header />
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-8">
+			<div>
+				<h1 class="text-4xl font-bold" id="greeting">Thank you!</h1>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    if (name) {
+      const el = document.getElementById('greeting');
+      if (el) el.textContent = `Thank you, ${name}!`;
+    }
+  </script>
 </Layout>

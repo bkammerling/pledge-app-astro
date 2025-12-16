@@ -5,7 +5,7 @@ import ProgressBar from './ProgressBar.astro';
   <ProgressBar pledgeId={1} />
   <hr class="border-gray-300 my-4" />
   <p class="mb-4"><strong>I believe in protecting goslings everywhere. Add my name:</strong></p>
-  <form class="flex flex-col gap-4 max-w-sm">
+  <form class="flex flex-col gap-4 max-w-sm" method="post" action="/api/postSignee">
     <div class="relative">
       <input 
         type="text" 
@@ -46,4 +46,20 @@ import ProgressBar from './ProgressBar.astro';
     </button>
     <div class="text-gray-600 text-sm">By adding your name, you agree to our Terms of Service and Privacy Policy.</div>
   </form>
+
+  <script>
+    /*
+    import { actions } from 'astro:actions';
+    import { navigate } from 'astro:transitions/client';
+
+    const form = document.querySelector('form');
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      // Send form data to the astro server action
+      const { data, error } = await actions.postSignee(formData);
+      if (!error) navigate('/donate');
+    });
+    */
+  </script>
 </div>
