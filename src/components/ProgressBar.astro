@@ -1,32 +1,113 @@
 ---
-import { db, Signee, Pledge, eq, count } from 'astro:db';
+import { db, Pledge, eq } from 'astro:db';
 const { pledgeId } = Astro.props;
-const signeesResult = await db.select({ value: count() }).from(Signee).where(eq(Signee.pledgeId, pledgeId));
-let signees = signeesResult[0]?.value ?? 0;
-// If signees is under 100, add 100 
-signees = signees < 100 ? signees + 100 : signees;
+
+// Prerender the pledge data (target) - this is static
 const pledgeResult = await db.select().from(Pledge).where(eq(Pledge.id, pledgeId)).limit(1);
 const pledge = pledgeResult[0];
-let target = pledge?.target ?? 1000;
-if (pledge && pledge.isMovingTarget) {
-  // Set target to the nearest rounded figure at least a third above current signees
-  if (target <= signees) {
-    target = Math.ceil((signees * 1.33) / 1000) * 1000;
-  }
-}
-
+const baseTarget = pledge?.target ?? 1000;
+const isMovingTarget = pledge?.isMovingTarget ?? false;
 ---
-<div class="flex flex-col">
+
+<div class="flex flex-col" data-pledge-id={pledgeId} data-base-target={baseTarget} data-is-moving-target={isMovingTarget}>
   <div class="w-full max-w-sm bg-gray-200 rounded-full h-6 mb-2 relative">
     <div 
-      class="bg-primary-500 h-6 rounded-full transition-all duration-500"
-      style={`width: ${signees / target * 100}%;`}
-      aria-valuenow={signees}
-      aria-valuemax={target}
-      aria-valuemin="0"
+      id="progress-bar"
+      class="bg-primary-500 h-6 rounded-full transition-all duration-1000"
+      style="width: 0%;"
       role="progressbar"
+      aria-valuemin="0"
     ></div>
   </div>
-  <div class="text-4xl font-bold text-primary-600 mb-1">{signees}</div>
-  <div class="text-gray-600">Help us get to {target}</div>
+  <div class="text-4xl font-bold text-primary-600 mb-1" id="signee-count">-</div>
+  <div class="text-gray-600" id="target-text">Loading...</div>
 </div>
+
+<script>
+  // This runs on every page load
+  async function updateProgressBar() {
+    const container = document.querySelector('[data-pledge-id]') as HTMLElement;
+    if (!container) return;
+
+    const pledgeId = container.dataset.pledgeId;
+    const baseTarget = parseInt(container.dataset.baseTarget ?? '1000', 10);
+    const isMovingTarget = container.dataset.isMovingTarget === 'true';
+
+    try {
+      // Fetch fresh signee count from API
+      const response = await fetch(`/api/getSigneeCount?pledgeId=${pledgeId}`);
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('Error fetching signee count:', data.error);
+        return;
+      }
+
+      const signees = data.count;
+      
+      // Calculate target (same logic as before)
+      let target = baseTarget;
+      if (isMovingTarget && target <= signees) {
+        target = Math.ceil((signees * 1.33) / 1000) * 1000;
+      }
+
+      // Update target text
+      const targetText = document.getElementById('target-text');
+      if (targetText) {
+        targetText.textContent = `Help us get to ${target.toLocaleString()}`;
+      }
+
+      // Animate the count from 0 to signees
+      const countElement = document.getElementById('signee-count');
+      if (countElement) {
+        //animateCount(countElement, 0, signees, 1000);
+        // Add CSS to set --num variable
+        countElement.style.setProperty('--num', signees.toString());
+        countElement.textContent = "";
+        countElement.classList.add('loaded');
+      }
+
+      // Animate the progress bar
+      const progressBar = document.getElementById('progress-bar');
+      if (progressBar) {
+        const percentage = Math.min((signees / target) * 100, 100);
+        progressBar.setAttribute('aria-valuenow', signees.toString());
+        progressBar.setAttribute('aria-valuemax', target.toString());
+        
+        // Small delay to ensure smooth animation
+        setTimeout(() => {
+          progressBar.style.width = `${percentage}%`;
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Failed to fetch signee count:', error);
+    }
+  }
+
+  // Animate number counting up
+  function animateCount(element: HTMLElement, start: number, end: number, duration: number) {
+    const startTime = performance.now();
+    
+    function update(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeOutQuad = (t: number) => t * (2 - t);
+      const currentCount = Math.floor(start + (end - start) * easeOutQuad(progress));
+      
+      element.textContent = currentCount.toLocaleString();
+      
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        element.textContent = end.toLocaleString();
+      }
+    }
+    
+    requestAnimationFrame(update);
+  }
+
+  // Run on page load
+  updateProgressBar();
+</script>

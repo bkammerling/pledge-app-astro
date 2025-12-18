@@ -4,3 +4,18 @@
   --color-primary-500: #AE2989; /* Purple */
   --color-primary-600: #9B1B7E; /* Darker Purple */
 }
+
+@property --num {
+  syntax: '<integer>';
+  initial-value: 0;  
+  inherits: false;
+}
+
+#signee-count {
+  transition: --num 1s;
+  counter-reset: num var(--num);
+}
+
+#signee-count.loaded::after {
+  content: counter(num);
+}
