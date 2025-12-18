@@ -2,6 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import SignupForm from '../components/SignupForm.astro';
+import { db, Pledge, eq } from 'astro:db';
+const pledgeId = 1;
+const pledgeResult = await db.select().from(Pledge).where(eq(Pledge.id, pledgeId)).limit(1);
+if (pledgeResult.length === 0) {
+  throw new Error('Pledge not found');
+}
+const pledge = pledgeResult[0];
 ---
 
 <Layout title="Home">
@@ -9,15 +16,12 @@ import SignupForm from '../components/SignupForm.astro';
 	<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		<div class="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-8">
 			<div>
-				<h1 class="text-4xl font-bold">Stand with Goslings: Protect Our Feathered Friends</h1>
-				<img src="/goslings.jpg" alt="Gosling Image" class="w-full h-auto my-4 rounded-lg shadow-md" />
-				<p>Our charity is dedicated to rescuing and protecting vulnerable goslings in our local wetlands. Each spring, countless young goslings face threats from habitat loss, pollution, and predators. We work tirelessly to provide safe nesting areas, rehabilitate injured birds, and educate the community about the importance of preserving natural habitats.</p>
-				<br>
-				<p>By supporting our mission, you help ensure that goslings have a safe start in life and that future generations can enjoy the beauty and diversity of our natural world.</p>
-
+				<h1 class="text-4xl font-bold">{ pledge.title }</h1>
+				<img src={ pledge.imageSrc } alt="Gosling Image" class="w-full max-h-[max(350px,45vh)] object-cover object-center my-4 rounded-lg shadow-md" />
+				<div set:html={pledge.body}></div>
 			</div>
 			<div>
-				<SignupForm />
+				<SignupForm pledgeId={ pledgeId } intro={ pledge.formintro } />
 			</div>
 		</div>
 	</div>
