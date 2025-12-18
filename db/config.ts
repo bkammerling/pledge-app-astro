@@ -7,8 +7,8 @@ const Pledge = defineTable({
     body: column.text(),
     imageSrc: column.text(),
     formintro: column.text(),
-    signees: column.number(),
     target: column.number(),
+    isMovingTarget: column.boolean({ default: false }),
   }
 })
 

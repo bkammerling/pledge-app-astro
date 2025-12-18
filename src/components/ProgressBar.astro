@@ -1,12 +1,20 @@
 ---
-import { db, Signee, eq, count } from 'astro:db';
+import { db, Signee, Pledge, eq, count } from 'astro:db';
 const { pledgeId } = Astro.props;
-const result = await db.select({ value: count() }).from(Signee).where(eq(Signee.pledgeId, pledgeId));
-let signees = result[0]?.value ?? 0;
+const signeesResult = await db.select({ value: count() }).from(Signee).where(eq(Signee.pledgeId, pledgeId));
+let signees = signeesResult[0]?.value ?? 0;
 // If signees is under 100, add 100 
 signees = signees < 100 ? signees + 100 : signees;
-// Set target to the nearest rounded figure at least a third above current signees
-const target = Math.ceil(signees / 1000 + 0.33) * 1000;
+const pledgeResult = await db.select().from(Pledge).where(eq(Pledge.id, pledgeId)).limit(1);
+const pledge = pledgeResult[0];
+let target = pledge?.target ?? 1000;
+if (pledge && pledge.isMovingTarget) {
+  // Set target to the nearest rounded figure at least a third above current signees
+  if (target <= signees) {
+    target = Math.ceil((signees * 1.33) / 1000) * 1000;
+  }
+}
+
 ---
 <div class="flex flex-col">
   <div class="w-full max-w-sm bg-gray-200 rounded-full h-6 mb-2 relative">
