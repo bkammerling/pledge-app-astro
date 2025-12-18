@@ -1,20 +1,24 @@
 ---
-import { db, Pledge, eq } from 'astro:db';
+import { db, Signee, eq, count } from 'astro:db';
 const { pledgeId } = Astro.props;
-const result = await db.select().from(Pledge).where(eq(Pledge.id, pledgeId));
-const pledge = result[0] || { signees: 0, target: 1200 };
+const result = await db.select({ value: count() }).from(Signee).where(eq(Signee.pledgeId, pledgeId));
+let signees = result[0]?.value ?? 0;
+// If signees is under 100, add 100 
+signees = signees < 100 ? signees + 100 : signees;
+// Set target to the nearest rounded figure at least a third above current signees
+const target = Math.ceil(signees / 1000 + 0.33) * 1000;
 ---
 <div class="flex flex-col">
   <div class="w-full max-w-sm bg-gray-200 rounded-full h-6 mb-2 relative">
     <div 
       class="bg-primary-500 h-6 rounded-full transition-all duration-500"
-      style={`width: ${pledge.signees / pledge.target * 100}%;`}
-      aria-valuenow={pledge.signees}
-      aria-valuemax={pledge.target}
+      style={`width: ${signees / target * 100}%;`}
+      aria-valuenow={signees}
+      aria-valuemax={target}
       aria-valuemin="0"
       role="progressbar"
     ></div>
   </div>
-  <div class="text-4xl font-bold text-primary-600 mb-1">{pledge.signees}</div>
-  <div class="text-gray-600">Help us get to {pledge.target}</div>
+  <div class="text-4xl font-bold text-primary-600 mb-1">{signees}</div>
+  <div class="text-gray-600">Help us get to {target}</div>
 </div>
